@@ -165,14 +165,16 @@ const questions = [
 			});
 
 			// Find the lowest customer
-			let lowestVal = -1;
+			let lowestVal = 9999;
 			let lowestCustomer = "none";
 			// Go through each name
 			for (name in totalByCustomer){
+				// Calculate percentage
+				const pct = CCByCustomer[name] / totalByCustomer[name];
 				// If this name's percentage is the highest one so far
-				if (totalByCustomer[name] / CCByCustomer[name] > lowestVal){
+				if (pct < lowestVal){
 					// Update the counts and name
-					lowestVal = totalByCustomer[name] / CCByCustomer[name];
+					lowestVal = pct;
 					lowestCustomer = name;
 				}
 			}
@@ -558,8 +560,39 @@ const questions = [
 
 // Parameter options
 const parameters = {};
-
 /**** End Global Variabls ****/
+
+
+
+/**** Start DOM Variabls ****/
+// Gamemode Selector
+const select_gamemode = document.getElementById("gamemode");
+const div_gamemodeDescription = document.getElementById("gamemodeDescription");
+
+// Start/Next buttons
+const div_buttonHolder = document.getElementById("buttonHolder");
+const btn_start = document.getElementById("start");
+const span_loading = document.getElementById("loading");
+
+// QnA display
+const div_QnAHolder = document.getElementById("QnAHolder");
+const div_question = document.getElementById("question");
+const div_answers = document.getElementById("answers");
+const div_a1Holder = document.getElementById("a1Holder")
+const inp_a1 = document.getElementById("a1");
+const div_a2Holder = document.getElementById("a2Holder")
+const inp_a2 = document.getElementById("a2");
+const btn_submit = document.getElementById("submit");
+const div_result = document.getElementById("result");
+const div_correct = document.getElementById("correct");
+const div_incorrect = document.getElementById("incorrect");
+
+// Score display
+const div_roundTime = document.getElementById("roundTime");
+const div_gameTime = document.getElementById("gameTime");
+const div_roundsCompleted = document.getElementById("roundsCompleted");
+const div_avgTimePerRound = document.getElementById("avgTimePerRound");
+/**** End DOM Variabls ****/
 
 
 
@@ -630,8 +663,15 @@ function toMoney(num){
 /**** Start Importing Data ****/
 // Get the parameters data
 fetch("parameters.csv")
-// turn into text
-.then(resp => resp.text())
+// Make sure we found the file
+.then(resp => {
+	// IF the response didn't find anything
+	if (!resp.ok){
+		throw new Error("Couldn't load and parse parameters file");
+	}
+	// otherwise, get the text
+	return resp.text();
+})
 // Split into rows
 .then(csv => csv.split("\n"))
 // Split the rows into columns
@@ -679,13 +719,18 @@ fetch("parameters.csv")
 })
 .then( () => {
 	// Done importing the parameter data
-});
-
-
-// Get the master data
-fetch("data.csv")
-// turn into text
-.then(resp => resp.text())
+})
+// Now get the master data
+.then(() => fetch("data.csv"))
+// Make sure we found the file
+.then(resp => {
+	// IF the response didn't find anything
+	if (!resp.ok){
+		throw new Error("Couldn't find data.csv file");
+	}
+	// otherwise, get the text
+	return resp.text();
+})
 // Split into rows
 .then(csv => csv.split("\n"))
 // Split the rows into columns
@@ -720,6 +765,12 @@ fetch("data.csv")
 .then(() => {
 	// Show that data is done loading
 	btn_start.disabled = false;
+	span_loading.classList.add("hidden");
+
+})
+.catch(err => {
+	span_loading.innerHTML = err.message;
+	span_loading.classList.add("error");
 })
 /**** End Importing Data ****/
 
@@ -897,8 +948,8 @@ let gamemodeDescriptions = {};
 gamemodeDescriptions[gamemodes.casual] = "Keep answering questions forever and see your average time per round.";
 gamemodeDescriptions[gamemodes.rounds] = "See how fast you can correctly answer 10 questions.";
 gamemodeDescriptions[gamemodes.countdown] = "See how many questions you can correctly answer in 3 minutes.";
-countdownTimeLimit = 5; // s
-roundLimit = 10; // rounds
+const countdownTimeLimit = 60*3; // s
+const roundLimit = 10; // rounds
 
 // Functions to check if the game is over based on the gamemode
 let gameOverChecks = {};
@@ -911,37 +962,6 @@ let gameTickInterval = 0;
 const gameTickDur = 100; // ms
 
 /**** End Game Variables ****/
-
-
-
-/**** Start DOM Variabls ****/
-// Gamemode Selector
-const select_gamemode = document.getElementById("gamemode");
-const div_gamemodeDescription = document.getElementById("gamemodeDescription");
-
-// Start/Next buttons
-const btn_start = document.getElementById("start");
-const div_buttonHolder = document.getElementById("buttonHolder");
-
-// QnA display
-const div_QnAHolder = document.getElementById("QnAHolder");
-const div_question = document.getElementById("question");
-const div_answers = document.getElementById("answers");
-const div_a1Holder = document.getElementById("a1Holder")
-const inp_a1 = document.getElementById("a1");
-const div_a2Holder = document.getElementById("a2Holder")
-const inp_a2 = document.getElementById("a2");
-const btn_submit = document.getElementById("submit");
-const div_result = document.getElementById("result");
-const div_correct = document.getElementById("correct");
-const div_incorrect = document.getElementById("incorrect");
-
-// Score display
-const div_roundTime = document.getElementById("roundTime");
-const div_gameTime = document.getElementById("gameTime");
-const div_roundsCompleted = document.getElementById("roundsCompleted");
-const div_avgTimePerRound = document.getElementById("avgTimePerRound");
-/**** End DOM Variabls ****/
 
 
 

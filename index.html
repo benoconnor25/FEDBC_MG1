@@ -17,6 +17,20 @@
 				grid-column: 1 / -1
 			}
 
+			#loading {
+				position: relative;
+			}
+			#loading.error {
+				color: red;
+			}
+			#loading img {
+				margin-left: 5px;
+				height: 1em;
+				position: absolute;
+				top: 50%;
+				transform: translate(0, -50%);
+			}
+
 			#QnAHolder {
 				display: grid;
 				grid-template-columns: 1fr auto;
@@ -99,9 +113,12 @@
 			<div id="problemStatement">
 				<h3>Problem Statement</h3>
 				<p>Your Client is a segment made up of many smaller businesses. Recently, they have been trying to get a better sense of their sales order volumes across all of the groups. Specifically, they are interested in seeing a summary of sales orders by customers and if those customers span across multiple groups so they can make strategic decisions on how to realign their salesmen and customer service group.</p>
-				<p>Using a data manipulation tool, combine ERP sales order data into one file. Given the files do not have a unique company field, add a column to each file based on the file name to reference the company field. Summarize the data to answer the question below:</p>
+				<p>User Alteryx to combine ERP sales order data into one file. Given the files do not have a unique company field, add a column to each file based on the file name to reference the company field. Summarize the data to answer the question below:</p>
 			</div>
-			<div id="buttonHolder"><button id="start" disabled>Start Game</button></div>
+			<div id="buttonHolder">
+				<button id="start" disabled>Start Game</button>
+				<span id="loading">Loading data... <img src='loading.gif'></span>
+			</div>
 			<div id="QnAHolder" class="hidden">
 				<div id="question"></div>
 				<div id="answers">
